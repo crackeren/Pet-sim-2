@@ -694,6 +694,94 @@ task.spawn(function()
         task.wait(0.25)
     end
 end)
+-- ============================================================================
+-- V34 FINAL ALL-IN-ONE PRO HUB - PARÇA J (SEÇMELİ DÜNYA IŞINLAYICI)
+-- ============================================================================
+if sayfalar["Misc"] then
+    sayfalar["Misc"].CanvasSize = UDim2.new(0, 0, 0, 340)
+end
+
+local dunyalar = {
+    "Spawn",
+    "Beach",
+    "Jungle",
+    "Winter",
+    "Desert",
+    "Volcano"
+}
+local seciliDunyaIndex = 1
+
+-- Ayraç Başlığı (Misc Sekmesi)
+local tpBaslik = Instance.new("TextLabel", sayfalar["Misc"])
+tpBaslik.Size = UDim2.new(0.98, 0, 0, 20)
+tpBaslik.BackgroundTransparency = 1
+tpBaslik.TextColor3 = Color3.fromRGB(0, 220, 130)
+tpBaslik.Font = Enum.Font.GothamBold
+tpBaslik.TextSize = 11
+tpBaslik.Text = "— DÜNYA IŞINLAYICI (WORLD TELEPORT) —"
+
+-- < Dünya Seçici > Satırı
+local worldRow = satirOlustur(sayfalar["Misc"])
+
+local prevWorld = Instance.new("TextButton", worldRow)
+prevWorld.Size = UDim2.new(0, 30, 0, 26)
+prevWorld.Position = UDim2.new(0, 5, 0.5, -13)
+prevWorld.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+prevWorld.TextColor3 = Color3.new(1, 1, 1)
+prevWorld.Font = Enum.Font.GothamBold
+prevWorld.Text = "<"
+kose(prevWorld, 5)
+
+local worldLbl = Instance.new("TextLabel", worldRow)
+worldLbl.Size = UDim2.new(1, -74, 1, 0)
+worldLbl.Position = UDim2.new(0, 37, 0, 0)
+worldLbl.BackgroundTransparency = 1
+worldLbl.TextColor3 = Color3.fromRGB(235, 235, 245)
+worldLbl.Font = Enum.Font.GothamBold
+worldLbl.TextSize = 13
+worldLbl.Text = dunyalar[seciliDunyaIndex]
+
+local nextWorld = Instance.new("TextButton", worldRow)
+nextWorld.Size = UDim2.new(0, 30, 0, 26)
+nextWorld.Position = UDim2.new(1, -35, 0.5, -13)
+nextWorld.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+nextWorld.TextColor3 = Color3.new(1, 1, 1)
+nextWorld.Font = Enum.Font.GothamBold
+nextWorld.Text = ">"
+kose(nextWorld, 5)
+
+prevWorld.MouseButton1Click:Connect(function()
+    seciliDunyaIndex = (seciliDunyaIndex - 2) % #dunyalar + 1
+    worldLbl.Text = dunyalar[seciliDunyaIndex]
+end)
+
+nextWorld.MouseButton1Click:Connect(function()
+    seciliDunyaIndex = (seciliDunyaIndex % #dunyalar) + 1
+    worldLbl.Text = dunyalar[seciliDunyaIndex]
+end)
+
+-- Işınlan Butonu
+local tpWorldBtn = Instance.new("TextButton", sayfalar["Misc"])
+tpWorldBtn.Size = UDim2.new(0.98, 0, 0, 38)
+tpWorldBtn.BackgroundColor3 = Color3.fromRGB(0, 165, 105)
+tpWorldBtn.TextColor3 = Color3.new(1, 1, 1)
+tpWorldBtn.Font = Enum.Font.GothamBold
+tpWorldBtn.TextSize = 13
+tpWorldBtn.Text = "SEÇİLİ DÜNYAYA IŞINLAN"
+kose(tpWorldBtn, 7)
+
+tpWorldBtn.MouseButton1Click:Connect(function()
+    local hedefDunya = dunyalar[seciliDunyaIndex]
+    local net = getNetwork()
+    if net and net.Fire then
+        pcall(function()
+            net.Fire("Request World", hedefDunya)
+        end)
+        if bulutcukGoster then
+            bulutcukGoster("🌍 DÜNYA DEĞİŞTİRİLDİ", hedefDunya .. " dünyasına ışınlanıldı!")
+        end
+    end
+end)
 
 -- BURADAN AŞAĞIYA SENİN ORİJİNAL PSU KODUN GELECEK:
 
