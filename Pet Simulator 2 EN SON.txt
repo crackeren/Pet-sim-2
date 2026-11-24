@@ -695,7 +695,8 @@ task.spawn(function()
     end
 end)
 -- ============================================================================
--- V34 FINAL ALL-IN-ONE PRO HUB - PARÇA J (SEÇMELİ DÜNYA IŞINLAYICI)
+-- ============================================================================
+-- V34 FINAL ALL-IN-ONE PRO HUB - PARÇA J (CANNON FIRE + REQUEST WORLD TP)
 -- ============================================================================
 if sayfalar["Misc"] then
     sayfalar["Misc"].CanvasSize = UDim2.new(0, 0, 0, 340)
@@ -710,6 +711,28 @@ local dunyalar = {
     "Volcano"
 }
 local seciliDunyaIndex = 1
+
+-- Karakterin o an bulunduğu dünyayı tespit eden yardımcı
+local function mevcutDunyayiBul()
+    -- 1. Yöntem: Workspace.__MAP altındaki aktif harita ismine bak
+    local map = workspace:FindFirstChild("__MAP")
+    if map then
+        for _, d in ipairs(dunyalar) do
+            if map:FindFirstChild(d) then
+                return d
+            end
+        end
+    end
+    -- 2. Yöntem: Karakterin X/Z koordinatından veya Get Stats verisinden kontrol et
+    local net = getNetwork()
+    if net and net.Invoke then
+        local ok, stats = pcall(function() return net.Invoke("Get Stats") end)
+        if ok and type(stats) == "table" and stats.World then
+            return tostring(stats.World)
+        end
+    end
+    return "Spawn"
+end
 
 -- Ayraç Başlığı (Misc Sekmesi)
 local tpBaslik = Instance.new("TextLabel", sayfalar["Misc"])
@@ -772,13 +795,20 @@ kose(tpWorldBtn, 7)
 
 tpWorldBtn.MouseButton1Click:Connect(function()
     local hedefDunya = dunyalar[seciliDunyaIndex]
+    local suAnkiDunya = mevcutDunyayiBul()
     local net = getNetwork()
+    
     if net and net.Fire then
         pcall(function()
+            -- 1. Oyunun gerçek top/portal fırlatma sinyali
+            net.Fire("Cannon Fire", suAnkiDunya, hedefDunya)
+            task.wait(0.1)
+            -- 2. Yeni dünyanın harita/coin yükleme sinyali
             net.Fire("Request World", hedefDunya)
         end)
+        
         if bulutcukGoster then
-            bulutcukGoster("🌍 DÜNYA DEĞİŞTİRİLDİ", hedefDunya .. " dünyasına ışınlanıldı!")
+            bulutcukGoster("🌍 DÜNYA DEĞİŞTİRİLDİ", suAnkiDunya .. " ➔ " .. hedefDunya)
         end
     end
 end)
